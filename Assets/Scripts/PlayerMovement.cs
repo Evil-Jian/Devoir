@@ -6,12 +6,19 @@ public class PlayerMovement : MonoBehaviour
 {
     private Rigidbody2D rb;
     private BoxCollider2D coll;
-    private SpriteRenderer sprite;
     private Animator anim;
+    private Transform playerObject;
 
-    private Transform attackPoint;
-    private float attackRange = 0.5f;
-    private LayerMask enemyLaters;
+    //attacking
+    public GameObject attackPoint;
+    public float radius;
+    public LayerMask enemies;
+    public float damage;
+    //end of attacking variables
+
+    //health
+    public float playerHealth;
+    public float currentPlayerHealth;
 
     [SerializeField] private LayerMask jumpableGround;
 
@@ -19,86 +26,107 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float moveSpeed = 5f;          //Movement speed and jump height
     [SerializeField] private float jumpForce = 10f;
 
-    private enum MovementState { idle, running, jumping, falling, slicing }
+    private enum MovementState { idle, running, jumping, falling, slicing, hurting, dead} //Player states
 
     // Start is called before the first frame update
     private void Start()
     {
-        Debug.Log("Game Starts");
         rb = GetComponent<Rigidbody2D>();
         coll = GetComponent<BoxCollider2D>();
-        sprite = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
+        playerObject = GetComponent<Transform>();
+        currentPlayerHealth = playerHealth;
     }
 
     // Update is called once per frame
     private void Update()
     {
-        dirX = Input.GetAxisRaw("Horizontal");
-        rb.velocity = new Vector2(dirX * moveSpeed, rb.velocity.y);    //Running
-
-        if (Input.GetButtonDown("Jump") && isGrounded()) //Key for keyboard, button for input manager
+        if(currentPlayerHealth < playerHealth)      //When the player is hurt
         {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);      //Jump
+            playerHealth = currentPlayerHealth;
+            anim.SetInteger("playerState", (int)MovementState.hurting);
         }
 
-        if(Input.GetButtonDown("Fire2"))
+        else if(playerHealth <= 0)          //When the player dies
         {
-            Attack();
+            anim.SetInteger("playerState", (int)MovementState.dead);
+            Destroy(rb);
+            Destroy(coll);
+            Destroy(gameObject, 5);
         }
 
-        else
-        {
-            UpdateAnimationState();
-        }        
+        else{        
+            dirX = Input.GetAxisRaw("Horizontal");
+            rb.velocity = new Vector2(dirX * moveSpeed, rb.velocity.y);    //Running
+
+            if (Input.GetButtonDown("Jump") && isGrounded()) //Key for keyboard, button for input manager
+            {
+                rb.velocity = new Vector2(rb.velocity.x, jumpForce);      //Jump
+            }
+
+            if(Input.GetButtonDown("Fire2"))        //When the user attacks
+            {
+                anim.SetInteger("playerState", (int)MovementState.slicing);
+            }
+
+            else
+            {
+                UpdateAnimationState();
+            } 
+        }       
     }
 
-    private void Attack()
+    public void Attack()       //Triggers during the player attack animation
     {
-        anim.SetInteger("playerState", (int)MovementState.slicing);
+        Collider2D[] enemy = Physics2D.OverlapCircleAll(attackPoint.transform.position, radius, enemies);
 
-        //Detect enemies in range of attack
-        //Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayers);
-
-        //Damage enemies
-        //foreach(Collider2D enemy in hitEnemies)
-        //{
-            //Debug.Log("We hit " + enemy.name);
-        //}
+        foreach(Collider2D enemyGameObject in enemy)
+        {
+            Debug.Log("Hit enemy");
+            Enemy_Health enemyHealth = enemyGameObject.GetComponent<Enemy_Health>();
+            if(enemyHealth != null) // Add null check to prevent NullReferenceException
+                enemyHealth.health -= damage;
+        }
     }
 
     private void UpdateAnimationState()
     {
         MovementState state;
 
-        if(dirX > 0f)
+        if(dirX > 0f) //running right
         {
             state = MovementState.running;
-            sprite.flipX = false;
+            playerObject.transform.eulerAngles = new Vector3(0f, 0f, 0f);
         }
-        else if(dirX < 0f) //left
+        else if(dirX < 0f) //running left
         {
             state = MovementState.running;
-            sprite.flipX = true;
+            playerObject.transform.eulerAngles = new Vector3(0f, 180f, 0f);
         }
         else
-        {
+        {           //Player is idle
             state = MovementState.idle;
         }
 
-        if(rb.velocity.y > .1f)
+        if(rb.velocity.y > .1f) //Player jumping
         {
             state = MovementState.jumping;
         }
-        else if(rb.velocity.y < -.1f){
+        else if(rb.velocity.y < -.1f){  //Player falling
             state = MovementState.falling;
         }
 
         anim.SetInteger("playerState", (int)state);
     }
 
-    private bool isGrounded()
+    private bool isGrounded()   //Player to only jump on the ground
     {
         return Physics2D.BoxCast(coll.bounds.center, coll.bounds.size, 0f, Vector2.down, .1f, jumpableGround);
+    }
+
+
+    private void OnDrawGizmos() //For viewing the gizmo attack circle
+    {
+        Gizmos.DrawWireSphere(attackPoint.transform.position, radius);
     }
 }
