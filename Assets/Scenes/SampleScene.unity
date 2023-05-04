@@ -7282,6 +7282,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Skeleton
       objectReference: {fileID: 0}
+    - target: {fileID: 7374241305828362190, guid: 07bd6052a6a00354a9fbaa7d295c008f, type: 3}
+      propertyPath: attackCooldown
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 07bd6052a6a00354a9fbaa7d295c008f, type: 3}
 --- !u!1001 &8734158652465840773
