@@ -47,12 +47,12 @@ public class Goblin_Script : MonoBehaviour
         if(health < currentHealth)      //When the skeleton is hurt
         {
             currentHealth = health;
-            anim.SetInteger("skeletonState", (int)MovementState.hurt);
+            anim.SetInteger("goblinState", (int)MovementState.hurt);
         }
 
         else if(health <= 0)        //When the skeleton dies
         {
-            anim.SetInteger("skeletonState", (int)MovementState.dead);
+            anim.SetInteger("goblinState", (int)MovementState.dead);
             Destroy(body);
             Destroy(box);
             Destroy(gameObject, 5);
@@ -70,7 +70,7 @@ public class Goblin_Script : MonoBehaviour
                     currentSpeed = 0f;
                     dirX = 0f;
                     if(cooldownTimer >= attackCooldown){    //Attack when the enemy is stops moving && player is in range
-                        anim.SetInteger("skeletonState", (int)MovementState.attacking);
+                        anim.SetInteger("goblinState", (int)MovementState.attacking);
                         cooldownTimer = 0f;
                         return;
                     }
@@ -126,7 +126,7 @@ public class Goblin_Script : MonoBehaviour
             state = MovementState.idle;
         }
 
-        anim.SetInteger("skeletonState", (int)state);
+        anim.SetInteger("goblinState", (int)state);
     }
 
     public void SkeletonAttack()    //Triggers during the skeleton attack animation
