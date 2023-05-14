@@ -14,8 +14,6 @@ public class Enemy_Health : MonoBehaviour
     private float cooldownTimer = Mathf.Infinity;
     [SerializeField] private float attackCooldown;
 
-    public float health;
-    public float currentHealth;
     private enum MovementState {idle, moving, attacking, hurt, dead};
 
     [SerializeField] private float moveSpeed;
@@ -24,26 +22,29 @@ public class Enemy_Health : MonoBehaviour
     private Transform target;
 
     private float dirX;
+    private int healthData;
+    private EnemyHealth healthAction;
 
     void Start()
     {
         anim = GetComponent<Animator>();
         body = GetComponent<Rigidbody2D>();
         box = GetComponent<BoxCollider2D>();
-        currentHealth = health;
+
+        healthAction = GetComponent<EnemyHealth>();
         currentSpeed = moveSpeed;
     }
 
     void Update()
     {
         cooldownTimer += Time.deltaTime;
-        if(health < currentHealth)      //When the skeleton is hurt
+        healthData = healthAction.ComputeHealth();
+        if(healthData == 0)      //When the skeleton is hurt
         {
-            currentHealth = health;
             anim.SetInteger("skeletonState", (int)MovementState.hurt);
         }
 
-        else if(health <= 0)        //When the skeleton dies
+        else if(healthData == 1)        //When the skeleton dies
         {
             anim.SetInteger("skeletonState", (int)MovementState.dead);
             Destroy(body);

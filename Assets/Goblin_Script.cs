@@ -15,8 +15,6 @@ public class Goblin_Script : MonoBehaviour
     private float cooldownTimer = Mathf.Infinity;
     [SerializeField] private float attackCooldown;
 
-    public float health;
-    public float currentHealth;
     private enum MovementState {idle, moving, attacking, hurt, dead};
 
     [SerializeField] private float moveSpeed;
@@ -25,6 +23,8 @@ public class Goblin_Script : MonoBehaviour
     private Transform target;
 
     private float dirX;
+    private int healthData;
+    private EnemyHealth healthAction;
 
     // Start is called before the first frame update
     void Start()
@@ -32,7 +32,8 @@ public class Goblin_Script : MonoBehaviour
         anim = GetComponent<Animator>();
         body = GetComponent<Rigidbody2D>();
         box = GetComponent<BoxCollider2D>();
-        currentHealth = health;
+
+        healthAction = GetComponent<EnemyHealth>();
         currentSpeed = moveSpeed;
     }
 
@@ -40,13 +41,14 @@ public class Goblin_Script : MonoBehaviour
     void Update()
     {
         cooldownTimer += Time.deltaTime;
-        if(health < currentHealth)      //When the skeleton is hurt
+        healthData = healthAction.ComputeHealth();
+        
+        if(healthData == 0)      //When the skeleton is hurt
         {
-            currentHealth = health;
             anim.SetInteger("goblinState", (int)MovementState.hurt);
         }
 
-        else if(health <= 0)        //When the skeleton dies
+        else if(healthData == 1)        //When the skeleton dies
         {
             anim.SetInteger("goblinState", (int)MovementState.dead);
             Destroy(body);

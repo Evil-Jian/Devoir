@@ -86,7 +86,7 @@ public class PlayerMovement : MonoBehaviour
         foreach(Collider2D enemyGameObject in enemy)
         {
             Debug.Log("Hit enemy");
-            Enemy_Health enemyHealth = enemyGameObject.GetComponent<Enemy_Health>();
+            EnemyHealth enemyHealth = enemyGameObject.GetComponent<EnemyHealth>();
             if(enemyHealth != null) // Add null check to prevent NullReferenceException
                 enemyHealth.health -= damage;
         }
