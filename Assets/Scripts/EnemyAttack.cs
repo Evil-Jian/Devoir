@@ -7,6 +7,7 @@ public class EnemyAttack : MonoBehaviour
     public GameObject attackPoint;
     public float attackRadius;
     public LayerMask enemies;
+    [SerializeField] private float damage;
 
     public void Attack()    //Triggers during the skeleton attack animation
     {

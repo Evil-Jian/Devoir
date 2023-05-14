@@ -12,10 +12,6 @@ public class Goblin_Script : MonoBehaviour
 
     public GameObject FOV;
     public float fovRadius;
-    public float attackRadius;
-    public GameObject attackPoint;
-    [SerializeField] private float damage;
-    public LayerMask enemies;
     private float cooldownTimer = Mathf.Infinity;
     [SerializeField] private float attackCooldown;
 
@@ -60,7 +56,7 @@ public class Goblin_Script : MonoBehaviour
         
         else
         {
-            if (target != null)
+            if (target != null && Player != null)
             {
                 // Move the enemy towards the player
                 Vector3 targetPosition = new Vector3(target.position.x, transform.position.y, transform.position.z);
@@ -127,24 +123,5 @@ public class Goblin_Script : MonoBehaviour
         }
 
         anim.SetInteger("goblinState", (int)state);
-    }
-
-    public void SkeletonAttack()    //Triggers during the skeleton attack animation
-    {
-        Collider2D[] enemy = Physics2D.OverlapCircleAll(attackPoint.transform.position, attackRadius, enemies);
-
-        foreach(Collider2D enemyGameObject in enemy)
-        {
-            Debug.Log("Hit player");
-            
-            PlayerMovement playerHealth = enemyGameObject.GetComponent<PlayerMovement>();
-            if(playerHealth != null) // Add null check to prevent NullReferenceException
-                playerHealth.currentPlayerHealth -= damage;
-        }
-    }
-
-    private void OnDrawGizmos() //For viewing the gizmo attack circle
-    {
-        Gizmos.DrawWireSphere(attackPoint.transform.position, attackRadius);
     }
 }
