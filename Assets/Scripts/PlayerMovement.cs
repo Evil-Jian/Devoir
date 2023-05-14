@@ -28,6 +28,7 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] private AudioSource attackSoundEffect;
     [SerializeField] private AudioSource moveSoundEffect;
+    [SerializeField] private AudioSource hurtSoundEffect;
 
     private enum MovementState { idle, running, jumping, falling, slicing, hurting, dead} //Player states
 
@@ -46,6 +47,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if(currentPlayerHealth < playerHealth)      //When the player is hurt
         {
+            hurtSoundEffect.Play();
             playerHealth = currentPlayerHealth;
             anim.SetInteger("playerState", (int)MovementState.hurting);
         }

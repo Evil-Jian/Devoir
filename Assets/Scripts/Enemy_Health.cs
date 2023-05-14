@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+//SKELETON_SCRIPT
 public class Enemy_Health : MonoBehaviour
 {
     private Animator anim;
@@ -25,6 +25,9 @@ public class Enemy_Health : MonoBehaviour
     private int healthData;
     private EnemyHealth healthAction;
 
+    [SerializeField] private AudioSource hurtSoundEffect;
+    [SerializeField] private AudioSource deathSoundEffect;
+
     void Start()
     {
         anim = GetComponent<Animator>();
@@ -41,11 +44,13 @@ public class Enemy_Health : MonoBehaviour
         healthData = healthAction.ComputeHealth();
         if(healthData == 0)      //When the skeleton is hurt
         {
+            hurtSoundEffect.Play();
             anim.SetInteger("skeletonState", (int)MovementState.hurt);
         }
 
         else if(healthData == 1)        //When the skeleton dies
         {
+            deathSoundEffect.Play();
             anim.SetInteger("skeletonState", (int)MovementState.dead);
             Destroy(body);
             Destroy(box);
