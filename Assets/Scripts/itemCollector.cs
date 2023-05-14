@@ -8,7 +8,9 @@ public class itemCollector : MonoBehaviour
     {
         if(collision.gameObject.CompareTag("Heart"))
         {
+            PlayerMovement health = GetComponent<PlayerMovement>();
             Destroy(collision.gameObject);
+            health.currentPlayerHealth += 20;
         }
     }
 }

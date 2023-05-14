@@ -46,7 +46,10 @@ public class PlayerMovement : MonoBehaviour
             playerHealth = currentPlayerHealth;
             anim.SetInteger("playerState", (int)MovementState.hurting);
         }
-
+        else if(currentPlayerHealth > playerHealth)
+        {
+            playerHealth = currentPlayerHealth;
+        }
         else if(playerHealth <= 0)          //When the player dies
         {
             anim.SetInteger("playerState", (int)MovementState.dead);
