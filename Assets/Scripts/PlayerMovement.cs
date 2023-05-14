@@ -26,6 +26,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float moveSpeed = 5f;          //Movement speed and jump height
     [SerializeField] private float jumpForce = 10f;
 
+    [SerializeField] private AudioSource attackSoundEffect;
+    [SerializeField] private AudioSource moveSoundEffect;
+
     private enum MovementState { idle, running, jumping, falling, slicing, hurting, dead} //Player states
 
     // Start is called before the first frame update
@@ -70,6 +73,7 @@ public class PlayerMovement : MonoBehaviour
             if(Input.GetButtonDown("Fire2"))        //When the user attacks
             {
                 anim.SetInteger("playerState", (int)MovementState.slicing);
+                attackSoundEffect.Play();
             }
 
             else
@@ -95,20 +99,30 @@ public class PlayerMovement : MonoBehaviour
     private void UpdateAnimationState()
     {
         MovementState state;
+        if(!isGrounded()){
+            moveSoundEffect.Stop();
+        }
 
         if(dirX > 0f) //running right
         {
+            if(!moveSoundEffect.isPlaying){
+                moveSoundEffect.Play();
+            }
             state = MovementState.running;
             playerObject.transform.eulerAngles = new Vector3(0f, 0f, 0f);
         }
         else if(dirX < 0f) //running left
         {
+            if(!moveSoundEffect.isPlaying){
+                moveSoundEffect.Play();
+            }
             state = MovementState.running;
             playerObject.transform.eulerAngles = new Vector3(0f, 180f, 0f);
         }
         else
         {           //Player is idle
             state = MovementState.idle;
+            moveSoundEffect.Stop();
         }
 
         if(rb.velocity.y > .1f) //Player jumping
