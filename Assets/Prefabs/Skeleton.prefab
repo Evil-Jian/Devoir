@@ -95,6 +95,7 @@ GameObject:
   - component: {fileID: 7374241305828362190}
   - component: {fileID: -991536076369798055}
   - component: {fileID: -4841626703679806114}
+  - component: {fileID: -1197946691859039858}
   - component: {fileID: 1700217264757460650}
   - component: {fileID: 2227367452284997999}
   m_Layer: 7
@@ -293,6 +294,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health: 50
   currentHealth: 0
+--- !u!114 &-1197946691859039858
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7374241305828362182}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df7468c620edef34595532bf3e0a044e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  thornDamage: 5
+  attackCooldown: 4
 --- !u!82 &1700217264757460650
 AudioSource:
   m_ObjectHideFlags: 0

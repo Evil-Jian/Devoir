@@ -2,38 +2,37 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Bullet_Script : MonoBehaviour
+public class EnemyThorns : MonoBehaviour
 {
-    Rigidbody2D rb;
-    [SerializeField] private float damage;
+    [SerializeField] private float thornDamage;
+    private float cooldownTimer = Mathf.Infinity;
+    [SerializeField] private float attackCooldown;
+
     // Start is called before the first frame update
     void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
-        Destroy(gameObject, 3);
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-
+        cooldownTimer += Time.deltaTime;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            rb.velocity = Vector2.zero;
-            rb.isKinematic = true;
             // Retrieve the PlayerHealth component from the collided player object
             PlayerMovement playerHealth = collision.gameObject.GetComponent<PlayerMovement>();
 
-            if (playerHealth != null)
+            if (playerHealth != null && cooldownTimer >= attackCooldown)
             {
                 // Inflict damage on the player
-                playerHealth.currentPlayerHealth -= damage;
+                playerHealth.currentPlayerHealth -= thornDamage;
             }
-            Destroy(gameObject);
+            Debug.Log("Dead");
         }
     }
 }
