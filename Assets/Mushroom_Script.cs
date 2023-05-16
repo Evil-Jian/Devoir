@@ -26,9 +26,6 @@ public class Mushroom_Script : MonoBehaviour
     private int healthData;
     private EnemyHealth healthAction;
 
-    [SerializeField] private Transform firepoint;
-    [SerializeField] private GameObject[] fireball;
-
     // Start is called before the first frame update
     void Start()
     {
@@ -57,7 +54,7 @@ public class Mushroom_Script : MonoBehaviour
             anim.SetInteger("mushroomState", (int)MovementState.dead);
             Destroy(body);
             Destroy(box);
-            Destroy(gameObject, 5);
+            Destroy(gameObject, 2);
         }
         
         else
@@ -129,10 +126,5 @@ public class Mushroom_Script : MonoBehaviour
         }
 
         anim.SetInteger("mushroomState", (int)state);
-    }
-
-    private void RangedAttack()
-    {
-        cooldownTimer = 0;
     }
 }

@@ -53,7 +53,7 @@ public class Goblin_Script : MonoBehaviour
             anim.SetInteger("goblinState", (int)MovementState.dead);
             Destroy(body);
             Destroy(box);
-            Destroy(gameObject, 5);
+            Destroy(gameObject, 2);
         }
         
         else
