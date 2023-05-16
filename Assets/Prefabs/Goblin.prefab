@@ -203,7 +203,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 049d77366230e2648813d31650fa6637, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Player: {fileID: 0}
+  Player: {fileID: 78836912575817665, guid: dfee643b2dee03c438fc6c8e5457172a, type: 3}
   FOV: {fileID: 1618231596533660918}
   fovRadius: 5
   attackCooldown: 0.75

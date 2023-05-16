@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-//SKELETON_SCRIPT
-public class Enemy_Health : MonoBehaviour
+
+public class Mushroom_Script : MonoBehaviour
 {
     private Animator anim;
     private Rigidbody2D body;
@@ -10,7 +10,8 @@ public class Enemy_Health : MonoBehaviour
     public GameObject Player;
 
     public GameObject FOV;
-    public float fovRadius;
+    public float fovRadius; 
+
     private float cooldownTimer = Mathf.Infinity;
     [SerializeField] private float attackCooldown;
 
@@ -25,9 +26,10 @@ public class Enemy_Health : MonoBehaviour
     private int healthData;
     private EnemyHealth healthAction;
 
-    [SerializeField] private AudioSource hurtSoundEffect;
-    [SerializeField] private AudioSource deathSoundEffect;
+    [SerializeField] private Transform firepoint;
+    [SerializeField] private GameObject[] fireball;
 
+    // Start is called before the first frame update
     void Start()
     {
         anim = GetComponent<Animator>();
@@ -38,25 +40,24 @@ public class Enemy_Health : MonoBehaviour
         currentSpeed = moveSpeed;
     }
 
+    // Update is called once per frame
     void Update()
     {
         cooldownTimer += Time.deltaTime;
         healthData = healthAction.ComputeHealth();
         if(healthData == 0)      //When the skeleton is hurt
         {
-            hurtSoundEffect.Play();
-            anim.SetInteger("skeletonState", (int)MovementState.hurt);
+            //hurtSoundEffect.Play();
+            anim.SetInteger("mushroomState", (int)MovementState.hurt);
         }
 
         else if(healthData == 1)        //When the skeleton dies
         {
-            if(!deathSoundEffect.isPlaying){
-                deathSoundEffect.Play();
-            }
-            anim.SetInteger("skeletonState", (int)MovementState.dead);
+            //deathSoundEffect.Play();
+            anim.SetInteger("mushroomState", (int)MovementState.dead);
             Destroy(body);
             Destroy(box);
-            Destroy(gameObject, 2);
+            Destroy(gameObject, 5);
         }
         
         else
@@ -71,7 +72,7 @@ public class Enemy_Health : MonoBehaviour
                     currentSpeed = 0f;
                     dirX = 0f;
                     if(cooldownTimer >= attackCooldown){    //Attack when the enemy is stops moving && player is in range
-                        anim.SetInteger("skeletonState", (int)MovementState.attacking);
+                        anim.SetInteger("mushroomState", (int)MovementState.attacking);
                         cooldownTimer = 0f;
                         return;
                     }
@@ -90,7 +91,6 @@ public class Enemy_Health : MonoBehaviour
             UpdateAnimationState();
         }
     }
-
     private void OnTriggerEnter2D(Collider2D collision)     //When the player enters the FOV
     {
         // Check if the player has entered the trigger collider
@@ -128,6 +128,11 @@ public class Enemy_Health : MonoBehaviour
             state = MovementState.idle;
         }
 
-        anim.SetInteger("skeletonState", (int)state);
+        anim.SetInteger("mushroomState", (int)state);
+    }
+
+    private void RangedAttack()
+    {
+        cooldownTimer = 0;
     }
 }
