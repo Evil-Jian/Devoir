@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -60,7 +61,6 @@ public class PlayerMovement : MonoBehaviour
             anim.SetInteger("playerState", (int)MovementState.dead);
             Destroy(rb);
             Destroy(coll);
-            Destroy(gameObject, 5);
         }
 
         else{        
@@ -141,6 +141,11 @@ public class PlayerMovement : MonoBehaviour
     private bool isGrounded()   //Player to only jump on the ground
     {
         return Physics2D.BoxCast(coll.bounds.center, coll.bounds.size, 0f, Vector2.down, .1f, jumpableGround);
+    }
+
+    public void gameOverScreen()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
 
     private void OnDrawGizmos() //For viewing the gizmo attack circle

@@ -26,6 +26,11 @@ public class Goblin_Script : MonoBehaviour
     private int healthData;
     private EnemyHealth healthAction;
 
+    [SerializeField] private AudioSource hurtSoundEffect;
+    [SerializeField] private AudioSource deathSoundEffect;
+
+    private bool deathSoundPlayed = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -45,11 +50,16 @@ public class Goblin_Script : MonoBehaviour
         
         if(healthData == 0)      //When the skeleton is hurt
         {
+            hurtSoundEffect.Play();
             anim.SetInteger("goblinState", (int)MovementState.hurt);
         }
 
         else if(healthData == 1)        //When the skeleton dies
         {
+            if(!deathSoundPlayed){
+                deathSoundEffect.Play();
+                deathSoundPlayed = true;
+            }
             anim.SetInteger("goblinState", (int)MovementState.dead);
             Destroy(body);
             Destroy(box);

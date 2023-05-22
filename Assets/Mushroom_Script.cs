@@ -26,6 +26,10 @@ public class Mushroom_Script : MonoBehaviour
     private int healthData;
     private EnemyHealth healthAction;
 
+    [SerializeField] private AudioSource hurtSoundEffect;
+    [SerializeField] private AudioSource deathSoundEffect;
+    private bool deathSoundPlayed = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -44,13 +48,16 @@ public class Mushroom_Script : MonoBehaviour
         healthData = healthAction.ComputeHealth();
         if(healthData == 0)      //When the skeleton is hurt
         {
-            //hurtSoundEffect.Play();
+            hurtSoundEffect.Play();
             anim.SetInteger("mushroomState", (int)MovementState.hurt);
         }
 
         else if(healthData == 1)        //When the skeleton dies
         {
-            //deathSoundEffect.Play();
+            if(!deathSoundPlayed){
+                deathSoundEffect.Play();
+                deathSoundPlayed = true;
+            }
             anim.SetInteger("mushroomState", (int)MovementState.dead);
             Destroy(body);
             Destroy(box);
