@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+//SKELETON_SCRIPT
 public class Enemy_Health : MonoBehaviour
 {
     private Animator anim;
@@ -11,15 +11,9 @@ public class Enemy_Health : MonoBehaviour
 
     public GameObject FOV;
     public float fovRadius;
-    public float attackRadius;
-    public GameObject attackPoint;
-    [SerializeField] private float damage;
-    public LayerMask enemies;
     private float cooldownTimer = Mathf.Infinity;
     [SerializeField] private float attackCooldown;
 
-    public float health;
-    public float currentHealth;
     private enum MovementState {idle, moving, attacking, hurt, dead};
 
     [SerializeField] private float moveSpeed;
@@ -28,36 +22,46 @@ public class Enemy_Health : MonoBehaviour
     private Transform target;
 
     private float dirX;
+    private int healthData;
+    private EnemyHealth healthAction;
+
+    [SerializeField] private AudioSource hurtSoundEffect;
+    [SerializeField] private AudioSource deathSoundEffect;
 
     void Start()
     {
         anim = GetComponent<Animator>();
         body = GetComponent<Rigidbody2D>();
         box = GetComponent<BoxCollider2D>();
-        currentHealth = health;
+
+        healthAction = GetComponent<EnemyHealth>();
         currentSpeed = moveSpeed;
     }
 
     void Update()
     {
         cooldownTimer += Time.deltaTime;
-        if(health < currentHealth)      //When the skeleton is hurt
+        healthData = healthAction.ComputeHealth();
+        if(healthData == 0)      //When the skeleton is hurt
         {
-            currentHealth = health;
+            hurtSoundEffect.Play();
             anim.SetInteger("skeletonState", (int)MovementState.hurt);
         }
 
-        else if(health <= 0)        //When the skeleton dies
+        else if(healthData == 1)        //When the skeleton dies
         {
+            if(!deathSoundEffect.isPlaying){
+                deathSoundEffect.Play();
+            }
             anim.SetInteger("skeletonState", (int)MovementState.dead);
             Destroy(body);
             Destroy(box);
-            Destroy(gameObject, 5);
+            Destroy(gameObject, 2);
         }
         
         else
         {
-            if (target != null)
+            if (target != null && Player != null)
             {
                 // Move the enemy towards the player
                 Vector3 targetPosition = new Vector3(target.position.x, transform.position.y, transform.position.z);
@@ -125,24 +129,5 @@ public class Enemy_Health : MonoBehaviour
         }
 
         anim.SetInteger("skeletonState", (int)state);
-    }
-
-    public void SkeletonAttack()    //Triggers during the skeleton attack animation
-    {
-        Collider2D[] enemy = Physics2D.OverlapCircleAll(attackPoint.transform.position, attackRadius, enemies);
-
-        foreach(Collider2D enemyGameObject in enemy)
-        {
-            Debug.Log("Hit player");
-            
-            PlayerMovement playerHealth = enemyGameObject.GetComponent<PlayerMovement>();
-            if(playerHealth != null) // Add null check to prevent NullReferenceException
-                playerHealth.currentPlayerHealth -= damage;
-        }
-    }
-   
-    private void OnDrawGizmos() //For viewing the gizmo attack circle
-    {
-        Gizmos.DrawWireSphere(attackPoint.transform.position, attackRadius);
     }
 }

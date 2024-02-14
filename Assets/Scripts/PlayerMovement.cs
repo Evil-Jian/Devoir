@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -26,6 +27,10 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float moveSpeed = 5f;          //Movement speed and jump height
     [SerializeField] private float jumpForce = 10f;
 
+    [SerializeField] private AudioSource attackSoundEffect;
+    [SerializeField] private AudioSource moveSoundEffect;
+    [SerializeField] private AudioSource hurtSoundEffect;
+
     private enum MovementState { idle, running, jumping, falling, slicing, hurting, dead} //Player states
 
     // Start is called before the first frame update
@@ -43,16 +48,19 @@ public class PlayerMovement : MonoBehaviour
     {
         if(currentPlayerHealth < playerHealth)      //When the player is hurt
         {
+            hurtSoundEffect.Play();
             playerHealth = currentPlayerHealth;
             anim.SetInteger("playerState", (int)MovementState.hurting);
         }
-
+        else if(currentPlayerHealth > playerHealth)
+        {
+            playerHealth = currentPlayerHealth;
+        }
         else if(playerHealth <= 0)          //When the player dies
         {
             anim.SetInteger("playerState", (int)MovementState.dead);
             Destroy(rb);
             Destroy(coll);
-            Destroy(gameObject, 5);
         }
 
         else{        
@@ -67,6 +75,7 @@ public class PlayerMovement : MonoBehaviour
             if(Input.GetButtonDown("Fire2"))        //When the user attacks
             {
                 anim.SetInteger("playerState", (int)MovementState.slicing);
+                attackSoundEffect.Play();
             }
 
             else
@@ -83,7 +92,7 @@ public class PlayerMovement : MonoBehaviour
         foreach(Collider2D enemyGameObject in enemy)
         {
             Debug.Log("Hit enemy");
-            Enemy_Health enemyHealth = enemyGameObject.GetComponent<Enemy_Health>();
+            EnemyHealth enemyHealth = enemyGameObject.GetComponent<EnemyHealth>();
             if(enemyHealth != null) // Add null check to prevent NullReferenceException
                 enemyHealth.health -= damage;
         }
@@ -92,20 +101,30 @@ public class PlayerMovement : MonoBehaviour
     private void UpdateAnimationState()
     {
         MovementState state;
+        if(!isGrounded()){
+            moveSoundEffect.Stop();
+        }
 
         if(dirX > 0f) //running right
         {
+            if(!moveSoundEffect.isPlaying){
+                moveSoundEffect.Play();
+            }
             state = MovementState.running;
             playerObject.transform.eulerAngles = new Vector3(0f, 0f, 0f);
         }
         else if(dirX < 0f) //running left
         {
+            if(!moveSoundEffect.isPlaying){
+                moveSoundEffect.Play();
+            }
             state = MovementState.running;
             playerObject.transform.eulerAngles = new Vector3(0f, 180f, 0f);
         }
         else
         {           //Player is idle
             state = MovementState.idle;
+            moveSoundEffect.Stop();
         }
 
         if(rb.velocity.y > .1f) //Player jumping
@@ -124,6 +143,10 @@ public class PlayerMovement : MonoBehaviour
         return Physics2D.BoxCast(coll.bounds.center, coll.bounds.size, 0f, Vector2.down, .1f, jumpableGround);
     }
 
+    public void gameOverScreen()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+    }
 
     private void OnDrawGizmos() //For viewing the gizmo attack circle
     {
